@@ -71,6 +71,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.CollectionUtils;
 
@@ -88,6 +89,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @Configuration
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableConfigurationProperties(FhirProperties.class)
+@EnableWebSecurity
 public class FhirAutoConfiguration {
 
 
@@ -102,6 +104,13 @@ public class FhirAutoConfiguration {
 	public FhirContext fhirContext() {
 		FhirContext fhirContext = new FhirContext(properties.getVersion());
 		return fhirContext;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public KeycloakSecurityConfig keycloakSecurityConfig() {
+		KeycloakSecurityConfig keycloakSecurityConfig = new KeycloakSecurityConfig();
+		return keycloakSecurityConfig;
 	}
 
 
