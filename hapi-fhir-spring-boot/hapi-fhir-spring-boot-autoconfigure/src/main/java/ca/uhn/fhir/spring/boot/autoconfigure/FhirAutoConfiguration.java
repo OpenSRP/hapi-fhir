@@ -109,19 +109,20 @@ public class FhirAutoConfiguration {
 		return fhirContext;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public KeycloakClientRequestFactory keycloakClientRequestFactory() {
-		KeycloakClientRequestFactory keycloakClientRequestFactory = new KeycloakClientRequestFactory();
-		return keycloakClientRequestFactory;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public KeycloakSecurityConfig keycloakSecurityConfig() {
-		KeycloakSecurityConfig keycloakSecurityConfig = new KeycloakSecurityConfig();
-		return keycloakSecurityConfig;
-	}
+	/*
+	 * @Bean
+	 * 
+	 * @ConditionalOnMissingBean public KeycloakClientRequestFactory
+	 * keycloakClientRequestFactory() { KeycloakClientRequestFactory
+	 * keycloakClientRequestFactory = new KeycloakClientRequestFactory(); return
+	 * keycloakClientRequestFactory; }
+	 * 
+	 * @Bean
+	 * 
+	 * @ConditionalOnMissingBean public KeycloakSecurityConfig
+	 * keycloakSecurityConfig() { KeycloakSecurityConfig keycloakSecurityConfig =
+	 * new KeycloakSecurityConfig(); return keycloakSecurityConfig; }
+	 */
 
 	@Bean
 	public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
@@ -133,7 +134,7 @@ public class FhirAutoConfiguration {
 	@EnableConfigurationProperties(FhirProperties.class)
 	@ConfigurationProperties("hapi.fhir.rest")
 	@SuppressWarnings("serial")
-	static class FhirRestfulServerConfiguration extends RestfulServer {
+	public static class FhirRestfulServerConfiguration extends RestfulServer {
 
 		private final FhirProperties properties;
 

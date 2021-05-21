@@ -32,9 +32,6 @@ import java.io.InputStream;
 @KeycloakConfiguration
 public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-	@Value("${keycloak.configurationFile:keycloak.json}")
-	private Resource keycloakConfigFileResource;
-
 	@Autowired
 	private KeycloakClientRequestFactory keycloakClientRequestFactory;
 
@@ -58,10 +55,22 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 	protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
 		return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
 	}
+	
+    @Bean
+    public KeycloakConfigResolver keycloakConfigResolver() {
+        return new KeycloakSpringBootConfigResolver();
+    }
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-//		super.configure(http);
+		super.configure(http);
+				
+		http.authorizeRequests()
+        .antMatchers("/**")
+        .authenticated()
+        .anyRequest()
+        .permitAll();
+		
 		/* @formatter:off */
 //		http
 //			.csrf().disable() // <- THIS LINE
@@ -73,10 +82,9 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 //			.authenticated();
 
 		//working
-		http.authorizeRequests()
-			.anyRequest()
-			.permitAll();
-		http.csrf().disable();
+/*
+ * http.authorizeRequests() .anyRequest() .permitAll(); http.csrf().disable();
+ */
 		//working end
 
 //		http
@@ -106,42 +114,37 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 //	}
 
 	@Bean
-	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) //TODO why?
 	@Autowired
 	public KeycloakRestTemplate keycloakRestTemplate() {
 		return new KeycloakRestTemplate(keycloakClientRequestFactory);
 	}
 
-	@Bean
-	public KeycloakConfigResolver KeycloakConfigResolver() {
-		return new KeycloakSpringBootConfigResolver();
-	}
+	/*
+	 * @Bean public KeycloakDeployment keycloakDeployment() throws IOException { if
+	 * (!keycloakConfigFileResource.isReadable()) { throw new
+	 * FileNotFoundException(String.
+	 * format("Unable to locate Keycloak configuration file: %s",
+	 * keycloakConfigFileResource.getFilename())); }
+	 * 
+	 * try (InputStream inputStream = keycloakConfigFileResource.getInputStream()) {
+	 * return KeycloakDeploymentBuilder.build(inputStream); }
+	 * 
+	 * }
+	 */
 
-	@Bean
-	public KeycloakDeployment keycloakDeployment() throws IOException {
-		if (!keycloakConfigFileResource.isReadable()) {
-			throw new FileNotFoundException(String.format("Unable to locate Keycloak configuration file: %s",
-				keycloakConfigFileResource.getFilename()));
-		}
-
-		try (InputStream inputStream = keycloakConfigFileResource.getInputStream()) {
-			return KeycloakDeploymentBuilder.build(inputStream);
-		}
-
-	}
-
-	@Bean
-	@Override
-	protected AdapterDeploymentContext adapterDeploymentContext() throws Exception {
-		AdapterDeploymentContextFactoryBean factoryBean;
-		if (this.KeycloakConfigResolver() != null) {
-			factoryBean = new AdapterDeploymentContextFactoryBean(new KeycloakSpringConfigResolverWrapper(this.KeycloakConfigResolver()));
-		} else {
-			factoryBean = new AdapterDeploymentContextFactoryBean(this.keycloakConfigFileResource);
-		}
-
-		factoryBean.afterPropertiesSet();
-		return factoryBean.getObject();
-	}
+	/*
+	 * @Bean
+	 * 
+	 * @Override protected AdapterDeploymentContext adapterDeploymentContext()
+	 * throws Exception { AdapterDeploymentContextFactoryBean factoryBean; if
+	 * (this.KeycloakConfigResolver() != null) { factoryBean = new
+	 * AdapterDeploymentContextFactoryBean(new
+	 * KeycloakSpringConfigResolverWrapper(this.KeycloakConfigResolver())); } else {
+	 * factoryBean = new
+	 * AdapterDeploymentContextFactoryBean(this.keycloakConfigFileResource); }
+	 * 
+	 * factoryBean.afterPropertiesSet(); return factoryBean.getObject(); }
+	 */
 
 }

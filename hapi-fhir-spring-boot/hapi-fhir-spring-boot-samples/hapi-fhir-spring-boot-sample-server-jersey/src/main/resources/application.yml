@@ -14,21 +14,23 @@ hapi:
       enabled: true
       request-only: true
     keycloak:
-       realm: Opensrp
+       realm: fhircore
+server.port: 8087
 management:
   security:
-    enabled: false
+    enabled: true
 logging:
   level:
     ca.uhn.fhir.jaxrs: debug
     org.keycloak: debug
+    org.spingframework: debug
 keycloak:
-   auth-server-url: http://localhost:8181/auth/
-   realm: Opensrp
+   auth-server-url: http://localhost:8080/auth/
+   realm: fhircore
    ssl-required: external
-   resource: opensrp-server
+   resource: fhircore-client
    credentials:
-      secret: b30a2b3a-f56e-483f-9ca7-e428a651b88d
+      secret: 9a666b97-92f5-4995-a2d3-83d75f5a98c1
    confidential-port: 0
    enabled: true
    public-client: true
@@ -40,5 +42,4 @@ keycloak:
 #         -  name:
 #            patterns:
 #               - /*
-
 
