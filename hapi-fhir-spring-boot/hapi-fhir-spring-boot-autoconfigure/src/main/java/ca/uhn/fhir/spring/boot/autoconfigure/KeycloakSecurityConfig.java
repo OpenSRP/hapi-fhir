@@ -40,7 +40,7 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
         super.configure(http);
         http.authorizeRequests()
           .antMatchers("/**")
-          .denyAll()
+          .authenticated()
          // .hasAuthority("fhirrole")
           ;
     }
