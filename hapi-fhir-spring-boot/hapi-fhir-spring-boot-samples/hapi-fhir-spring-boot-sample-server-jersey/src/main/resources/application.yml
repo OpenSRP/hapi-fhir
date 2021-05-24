@@ -13,9 +13,6 @@ hapi:
     validation:
       enabled: true
       request-only: true
-    keycloak:
-       realm: fhircore
-server.port: 8087
 management:
   security:
     enabled: true
@@ -23,23 +20,20 @@ logging:
   level:
     ca.uhn.fhir.jaxrs: debug
     org.keycloak: debug
-    org.spingframework: debug
+    org.springframework: debug
+server.port: 8087
 keycloak:
-   auth-server-url: http://localhost:8080/auth/
+   auth-server-url: http://127.0.0.1:8080/auth/
    realm: fhircore
-   ssl-required: external
+#   ssl-required: external
    resource: fhircore-client
    credentials:
       secret: 9a666b97-92f5-4995-a2d3-83d75f5a98c1
-   confidential-port: 0
-   enabled: true
-   public-client: true
-   bearer-only: true
-#   security-constraints:
-#      -  auth-roles:
-#            - "*"
-#      security-collections:
-#         -  name:
-#            patterns:
-#               - /*
-
+#   confidential-port: 0
+#   enabled: true
+#   public-client: true
+#   policy-enforcer-config.enforcement-mode: PERMISSIVE
+#  bearer-only: true
+#  security-constraints[0]:
+#    - authRoles[0]: fhirrole
+#    securityCollections[0].patterns[0]: /fhir/*

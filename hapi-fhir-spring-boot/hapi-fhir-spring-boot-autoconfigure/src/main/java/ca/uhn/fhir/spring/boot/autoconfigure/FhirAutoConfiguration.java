@@ -1,5 +1,46 @@
 package ca.uhn.fhir.spring.boot.autoconfigure;
 
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+
+import javax.persistence.EntityManagerFactory;
+import javax.servlet.ServletException;
+import javax.sql.DataSource;
+
+import org.apache.http.client.HttpClient;
+import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
+import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ResourceCondition;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.CollectionUtils;
+
 /*-
  * #%L
  * hapi-fhir-spring-boot-autoconfigure
@@ -47,42 +88,6 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseValidatingInterceptor;
 import okhttp3.OkHttpClient;
-import org.apache.http.client.HttpClient;
-import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ResourceCondition;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.util.CollectionUtils;
-
-import javax.persistence.EntityManagerFactory;
-import javax.servlet.ServletException;
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for HAPI FHIR.
@@ -93,8 +98,8 @@ import java.util.concurrent.ScheduledExecutorService;
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableConfigurationProperties(FhirProperties.class)
 @EnableWebSecurity
+@Import({ KeycloakSecurityConfig.class })
 public class FhirAutoConfiguration {
-
 
 	private final FhirProperties properties;
 
@@ -113,15 +118,19 @@ public class FhirAutoConfiguration {
 	 * @Bean
 	 * 
 	 * @ConditionalOnMissingBean public KeycloakClientRequestFactory
-	 * keycloakClientRequestFactory() { KeycloakClientRequestFactory
-	 * keycloakClientRequestFactory = new KeycloakClientRequestFactory(); return
-	 * keycloakClientRequestFactory; }
+	 * keycloakClientRequestFactory() { return new KeycloakClientRequestFactory(); }
 	 * 
 	 * @Bean
 	 * 
 	 * @ConditionalOnMissingBean public KeycloakSecurityConfig
-	 * keycloakSecurityConfig() { KeycloakSecurityConfig keycloakSecurityConfig =
-	 * new KeycloakSecurityConfig(); return keycloakSecurityConfig; }
+	 * keycloakSecurityConfig() { return new KeycloakSecurityConfig(); }
+	 */
+	
+	/*
+	 * @Bean
+	 * 
+	 * @ConditionalOnMissingBean public KeycloakConfigResolver
+	 * keycloakConfigResolver() { return new SpringBootKeycloakConfigResolver(); }
 	 */
 
 	@Bean
@@ -134,7 +143,7 @@ public class FhirAutoConfiguration {
 	@EnableConfigurationProperties(FhirProperties.class)
 	@ConfigurationProperties("hapi.fhir.rest")
 	@SuppressWarnings("serial")
-	public static class FhirRestfulServerConfiguration extends RestfulServer {
+	static class FhirRestfulServerConfiguration extends RestfulServer {
 
 		private final FhirProperties properties;
 
