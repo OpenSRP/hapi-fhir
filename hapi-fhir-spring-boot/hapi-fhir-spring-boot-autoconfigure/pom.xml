@@ -13,12 +13,6 @@
 
 	<packaging>jar</packaging>
 
-<!--	<properties>
-		<spring.security.oauth.version>2.4.0.RELEASE</spring.security.oauth.version>
-		<spring-boot-starter-security.version>2.4.5</spring-boot-starter-security.version>
-
-	</properties>
--->
 	<dependencies>
 		<!-- Compile dependencies -->
 		<dependency>
