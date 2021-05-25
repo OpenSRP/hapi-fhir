@@ -48,7 +48,6 @@ import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseValidatingInterceptor;
 import okhttp3.OkHttpClient;
 import org.apache.http.client.HttpClient;
-import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -93,6 +92,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableConfigurationProperties(FhirProperties.class)
 @EnableWebSecurity
+@Import({ KeycloakSecurityConfig.class })
 public class FhirAutoConfiguration {
 
 
@@ -109,19 +109,6 @@ public class FhirAutoConfiguration {
 		return fhirContext;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public KeycloakClientRequestFactory keycloakClientRequestFactory() {
-		KeycloakClientRequestFactory keycloakClientRequestFactory = new KeycloakClientRequestFactory();
-		return keycloakClientRequestFactory;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public KeycloakSecurityConfig keycloakSecurityConfig() {
-		KeycloakSecurityConfig keycloakSecurityConfig = new KeycloakSecurityConfig();
-		return keycloakSecurityConfig;
-	}
 
 	@Bean
 	public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
