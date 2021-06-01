@@ -13,20 +13,9 @@ hapi:
     validation:
       enabled: true
       request-only: true
-    keycloak:
-       realm: Opensrp
 management:
   security:
     enabled: false
 logging:
   level:
     ca.uhn.fhir.jaxrs: debug
-    org.keycloak: debug
-keycloak:
-   auth-server-url: http://localhost:8181/auth/
-   realm: Opensrp
-   resource: opensrp-server
-   credentials:
-      secret: b30a2b3a-f56e-483f-9ca7-e428a651b88d
-
-
