@@ -77,13 +77,15 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 		http.cors()
 			.and()
 			.authorizeRequests()
-//			.antMatchers("/").permitAll()
+			.antMatchers("/*").permitAll()
+			.antMatchers("/home").permitAll()
+			.antMatchers("/fhir").permitAll()
 			.mvcMatchers("/logout.do").permitAll()
-			.antMatchers("/fhir/**")
+			.antMatchers("/fhir/rest/**")
 			.authenticated()
 			.and()
 			.csrf()
-			.ignoringAntMatchers("/fhir/**","/**")
+			.ignoringAntMatchers("/*","/fhir/rest/**","/**", "/fhir/**")
 			.and()
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("logout.do", "GET"));
@@ -99,8 +101,10 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 			.and().ignoring().mvcMatchers("/images/**")
 			.and().ignoring().mvcMatchers("/html/**")
 			.and().ignoring().antMatchers(HttpMethod.OPTIONS, "/**")
-			.and().ignoring().antMatchers("/");
-//			.and().ignoring().antMatchers("/**");
+			.and().ignoring().antMatchers("/home")
+			.and().ignoring().antMatchers("/*")
+			.and().ignoring().antMatchers("/fhir")
+			.and().ignoring().antMatchers("/fhir/rest/metadata");
 		/* @formatter:on */
 	}
 

@@ -573,7 +573,7 @@ public abstract class BaseClient implements IRestfulClient {
 
 			EncodingEnum respType = EncodingEnum.forContentType(theResponseMimeType);
 			if (respType == null) {
-				if (myAllowHtmlResponse && theResponseMimeType.toLowerCase().contains(Constants.CT_HTML) && myReturnType != null) {
+				if (theResponseMimeType.toLowerCase().contains(Constants.CT_HTML) && myReturnType != null) {
 					return readHtmlResponse(theResponseInputStream);
 				}
 				throw NonFhirResponseException.newInstance(theResponseStatusCode, theResponseMimeType, theResponseInputStream);
