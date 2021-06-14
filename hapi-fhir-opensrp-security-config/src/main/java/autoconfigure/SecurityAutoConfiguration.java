@@ -30,11 +30,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for HAPI FHIR.
  *
- * @author Mathieu Ouellet
+ * @author Reham Muzzamil
  */
 @Configuration
 @AutoConfigureAfter({KeycloakSecurityConfig.class})
-//@AutoConfigurationPackage
 @EnableWebSecurity
 @Import({ KeycloakSecurityConfig.class })
 public class SecurityAutoConfiguration {

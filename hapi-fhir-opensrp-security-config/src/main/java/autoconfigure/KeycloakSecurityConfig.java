@@ -79,13 +79,13 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 			.authorizeRequests()
 			.antMatchers("/*").permitAll()
 			.antMatchers("/home").permitAll()
-			.antMatchers("/fhir").permitAll()
+//			.antMatchers("/fhir").permitAll()
 			.mvcMatchers("/logout.do").permitAll()
 			.antMatchers("/fhir/rest/**")
 			.authenticated()
 			.and()
 			.csrf()
-			.ignoringAntMatchers("/*","/fhir/rest/**","/**", "/fhir/**")
+			.ignoringAntMatchers("/fhir/rest/**", "/fhir/**")
 			.and()
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("logout.do", "GET"));
@@ -103,9 +103,9 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 			.and().ignoring().antMatchers(HttpMethod.OPTIONS, "/**")
 			.and().ignoring().antMatchers("/home")
 			.and().ignoring().antMatchers("/*")
-			.and().ignoring().antMatchers("/fhir")
+//			.and().ignoring().antMatchers("/fhir")
 			.and().ignoring().antMatchers("/fhir/rest/metadata");
-		/* @formatter:on */
+//		/* @formatter:on */
 	}
 
 	@Bean
