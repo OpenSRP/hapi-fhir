@@ -77,19 +77,17 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 		http.cors()
 			.and()
 			.authorizeRequests()
-			.antMatchers("/*").permitAll()
+			.antMatchers("/").permitAll()
 			.antMatchers("/home").permitAll()
-//			.antMatchers("/fhir").permitAll()
 			.mvcMatchers("/logout.do").permitAll()
-			.antMatchers("/fhir/rest/**")
+			.antMatchers("/fhir/**")
 			.authenticated()
 			.and()
 			.csrf()
-			.ignoringAntMatchers("/fhir/rest/**", "/fhir/**")
+			.ignoringAntMatchers("/fhir/**")
 			.and()
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("logout.do", "GET"));
-//			.logoutSuccessUrl("/loggedout");
 
 	}
 
@@ -104,7 +102,7 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 			.and().ignoring().antMatchers("/home")
 			.and().ignoring().antMatchers("/*")
 //			.and().ignoring().antMatchers("/fhir")
-			.and().ignoring().antMatchers("/fhir/rest/metadata");
+			.and().ignoring().antMatchers("/fhir/metadata");
 //		/* @formatter:on */
 	}
 
